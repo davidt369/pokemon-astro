@@ -1,0 +1,54 @@
+---
+import NavBar from "@components/shared/NavBar.astro";
+import { ClientRouter } from "astro:transitions";
+import { siteInfo } from "src/constants/site-info";
+
+interface Props {
+	title?: string;
+	image?: string;
+	description?: string;
+}
+
+const {
+	title = siteInfo.title,
+	description = siteInfo.description,
+	image,
+} = Astro.props;
+
+/*
+
+<style>
+
+	@view-transition {
+		navigation: auto;
+	}
+
+</style>
+*/
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+
+		<meta name="description" content={description} />
+		<meta name="author" content="Juanito Arcoiris" />
+
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={image} />
+
+		<title>{title}</title>
+		<ClientRouter />
+	</head>
+	<body class="bg-slate-800 text-slate-100 flex flex-col min-h-screen">
+		<NavBar />
+		<main class="mt-10 mx-auto flex-grow w-full max-w-4xl px-4">
+			<slot />
+		</main>
+	</body>
+</html>

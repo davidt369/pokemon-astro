@@ -1,0 +1,71 @@
+---
+// Importaciones y configuración
+import PokemonCard from "@components/Pokemons/PokemonCard.astro";
+import Title from "@components/shared/Title.astro";
+import type { Pockemon } from "@interfaces/pockemon";
+import Layout from "@layouts/Layout.astro";
+import type { GetStaticPaths } from "astro";
+
+
+const title = "Pokémon Static | Home";
+
+export const getStaticPaths = (async ({ paginate }) => {
+    const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+    const { results } = (await resp.json()) as Pockemon;
+
+    return paginate(results, { pageSize: 20 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+---
+
+<Layout title={title}>
+    <Title>Listado Paginado</Title>
+    <hr class="border-gray-400" />
+
+    <!-- Sección de lista de Pokémon -->
+    <section
+        aria-label="Listado de Pokémons"
+        class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 mt-5"
+    >
+        {page.data.map((pokemon) => (
+            <PokemonCard name={pokemon.name} url={pokemon.url} />
+        ))}
+    </section>
+
+    <!-- Sección de paginación -->
+    <section class="flex mt-10 gap-4 items-center justify-between">
+        <!-- Botón para página anterior -->
+        <a 
+            href={page.url.prev ?? "#"}
+            class={`btn ${!page.url.prev ? 'disabled' : ''}`}
+        >
+            Anteriores
+        </a>
+        
+        <!-- Botón para página siguiente -->
+        <a 
+            href={page.url.next ?? "#"}
+            class={`btn ${!page.url.next ? 'disabled' : ''}`}
+        >
+            Siguientes
+        </a>
+
+        <!-- Información de la página -->
+        <span class="text-xl font-bold">
+            Página {page.currentPage}
+        </span>
+    </section>
+</Layout>
+
+<!-- Estilos definidos con Tailwind -->
+<style>
+    /* Estilo general de botones */
+    .btn {
+        @apply bg-blue-500 text-white px-4 py-2 rounded-md transition-all duration-200;
+    }
+    /* Estilo para botones deshabilitados */
+    .btn.disabled {
+        @apply bg-gray-300 text-gray-500 cursor-not-allowed;
+    }
+</style>
